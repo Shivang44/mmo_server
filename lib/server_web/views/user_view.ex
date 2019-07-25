@@ -16,4 +16,8 @@ defmodule ServerWeb.UserView do
       password_hash: user.password_hash,
       access_token: user.access_token}
   end
+
+  def render("data.json", data) do
+    %{data: data}
+  end
 end

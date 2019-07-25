@@ -5,8 +5,8 @@ defmodule Server.Accounts do
 
   import Ecto.Query, warn: false
   alias Server.Repo
-
   alias Server.Accounts.User
+  require Logger
 
   @doc """
   Returns the list of users.
@@ -49,10 +49,16 @@ defmodule Server.Accounts do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_user(attrs \\ %{}) do
-    %User{}
-    |> User.changeset(attrs)
-    |> Repo.insert()
+  def create_user(email, password) do
+    password_hash = Argon2.hash_pwd_salt(password)
+    attrs = %{ email: email, password_hash: password_hash }
+
+    case %User{} |> User.changeset(attrs) |> Repo.insert() do
+      {:ok, user} -> {:ok, user}
+      {:error, changeset} ->
+        Logger.info "Unable to create account: #{inspect changeset}"
+        {:error, "Email taken"}
+    end
   end
 
   @doc """
@@ -100,5 +106,21 @@ defmodule Server.Accounts do
   """
   def change_user(%User{} = user) do
     User.changeset(user, %{})
+  end
+
+  def authenticate(email, password) do
+    user = Repo.one(from u in User, where: u.email == ^email)
+    case user do
+      nil -> {:error, "Account does not exist"}
+      user ->
+        case user |> Argon2.check_pass(password) do
+          {:error, _} -> {:error, "Invalid password"}
+          {:ok, _} ->
+            access_token = :crypto.strong_rand_bytes(32) |> Base.encode16 |> String.downcase
+            User.changeset(user, %{access_token: access_token}) |> Repo.update
+            {:ok, access_token}
+        end
+    end
+
   end
 end

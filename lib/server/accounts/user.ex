@@ -14,6 +14,7 @@ defmodule Server.Accounts.User do
   def changeset(user, attrs) do
     user
     |> cast(attrs, [:email, :password_hash, :access_token])
-    |> validate_required([:email, :password_hash, :access_token])
+    |> validate_required([:email, :password_hash])
+    |> unique_constraint(:email)
   end
 end
