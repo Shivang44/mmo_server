@@ -15,7 +15,6 @@ defmodule ServerWeb.UserController do
     with {:ok, %User{} = user} <- Accounts.create_user(email, password) do
       conn
       |> put_status(:created)
-      |> put_resp_header("location", Routes.user_path(conn, :show, user))
       |> render("show.json", user: user)
     end
   end
@@ -45,7 +44,7 @@ defmodule ServerWeb.UserController do
     with {:ok, auth_token} <- Accounts.authenticate(email, password) do
       conn
       |> put_status(:accepted)
-      |> render("data.json", %{auth_token: auth_token})
+      |> render("data.json", data: %{auth_token: auth_token})
     end
 
   end

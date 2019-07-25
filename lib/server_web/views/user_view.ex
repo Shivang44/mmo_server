@@ -1,6 +1,7 @@
 defmodule ServerWeb.UserView do
   use ServerWeb, :view
   alias ServerWeb.UserView
+  require Logger
 
   def render("index.json", %{users: users}) do
     %{data: render_many(users, UserView, "user.json")}
@@ -17,7 +18,7 @@ defmodule ServerWeb.UserView do
       access_token: user.access_token}
   end
 
-  def render("data.json", data) do
+  def render("data.json", %{data: data}) do
     %{data: data}
   end
 end
