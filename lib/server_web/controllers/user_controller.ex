@@ -18,6 +18,12 @@ defmodule ServerWeb.UserController do
       |> render("show.json", user: user)
     end
   end
+  def login(conn, %{"email" => email, "password" => password}) do
+    with {:ok, auth_token} <- Accounts.authenticate(email, password) do
+      conn
+      |> put_status(:accepted)
+      |> render("data.json", data: %{auth_token: auth_token})
+    end
 
   # def show(conn, %{"id" => id}) do
   #   user = Accounts.get_user!(id)
@@ -40,12 +46,6 @@ defmodule ServerWeb.UserController do
   #   end
   # end
 
-  def login(conn, %{"email" => email, "password" => password}) do
-    with {:ok, auth_token} <- Accounts.authenticate(email, password) do
-      conn
-      |> put_status(:accepted)
-      |> render("data.json", data: %{auth_token: auth_token})
-    end
 
   end
 end
