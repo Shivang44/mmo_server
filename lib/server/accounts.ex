@@ -8,6 +8,11 @@ defmodule Server.Accounts do
   alias Server.Accounts.User
   require Logger
 
+
+  def email_taken_error, do: "Email taken"
+  def invalid_password_error, do: "Invalid password"
+  def account_does_not_exist_error, do: "Account does not exist"
+
   @doc """
   Returns the list of users.
 
@@ -39,19 +44,18 @@ defmodule Server.Accounts do
 
     case %User{} |> User.changeset(attrs) |> Repo.insert() do
       {:ok, user} -> {:ok, user}
-      {:error, changeset} ->
-        Logger.info "Unable to create account: #{inspect changeset}"
-        {:error, "Email taken"}
+      {:error, _} ->
+        {:error, email_taken_error()}
     end
   end
 
   def authenticate(email, password) do
     user = Repo.one(from u in User, where: u.email == ^email)
     case user do
-      nil -> {:error, "Account does not exist"}
+      nil -> {:error, account_does_not_exist_error()}
       user ->
         case user |> Argon2.check_pass(password) do
-          {:error, _} -> {:error, "Invalid password"}
+          {:error, _} -> {:error, invalid_password_error()}
           {:ok, _} ->
             access_token = :crypto.strong_rand_bytes(32) |> Base.encode16 |> String.downcase
             User.changeset(user, %{access_token: access_token}) |> Repo.update
