@@ -12,17 +12,20 @@ defmodule Server.AccountsTest do
     :ok
   end
 
-  describe "when account exists" do
-    test "create_user/2 returns an error" do
-      {:ok, %User{} = _ } = Accounts.create_user(@email, @password)
+  defp create_user(_context) do
+    {:ok, %User{} = user} = Accounts.create_user(@email, @password)
+    %{user: user}
+  end
 
+  describe "when account exists" do
+    setup [:create_user]
+
+    test "create_user/2 returns an error" do
       {:error, msg} = Accounts.create_user(@email, @password)
       assert msg == Accounts.email_taken_error()
     end
 
-    test "authenticate/2 returns user when called with valid login" do
-      {:ok, %User{} = _} = Accounts.create_user(@email, @password)
-
+    test "authenticate/2 returns user when valid login" do
       {:ok, user} = Accounts.authenticate(@email, @password)
 
       query = from u in User, where: u.id == ^user.id
@@ -31,9 +34,7 @@ defmodule Server.AccountsTest do
       assert user == user_from_db
     end
 
-    test "authenticate/2 returns error when called with invalid logn" do
-      {:ok, %User{} = _ } = Accounts.create_user(@email, @password)
-
+    test "authenticate/2 returns error when invalid logn" do
       {:error, msg} = Accounts.authenticate(@email, @password <> "_")
       assert msg == Accounts.invalid_password_error()
     end
