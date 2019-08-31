@@ -4,33 +4,63 @@ defmodule ServerWeb.UserControllerTest do
   alias Server.Accounts
   alias Server.Accounts.User
 
-  @create_attrs %{
-    access_token: "some access_token",
-    email: "some email",
-    password_hash: "some password_hash"
-  }
-  @update_attrs %{
-    access_token: "some updated access_token",
-    email: "some updated email",
-    password_hash: "some updated password_hash"
-  }
-  @invalid_attrs %{access_token: nil, email: nil, password_hash: nil}
+  @email "shivangs44@gmail.com"
+  @password "bubbles"
 
-  def fixture(:user) do
-    {:ok, user} = Accounts.create_user(@create_attrs)
-    user
-  end
+
+  # @create_attrs %{
+  #   access_token: "some access_token",
+  #   email: "some email",
+  #   password_hash: "some password_hash"
+  # }
+
+  # @invalid_attrs %{access_token: nil, email: nil, password_hash: nil}
+
+  # def fixture(:user) do
+  #   {:ok, user} = Accounts.create_user(@create_attrs)
+  #   user
+  # end
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
 
-  # describe "index" do
-  #   test "lists all users", %{conn: conn} do
-  #     conn = get(conn, Routes.user_path(conn, :index))
-  #     assert json_response(conn, 200)["data"] == []
-  #   end
+  # setup do
+  #   Ecto.Adapters.SQL.Sandbox.allow(Server.Repo, self(), Accounts)
   # end
+
+  defp create_user(context) do
+    {:ok, %User{} = user} = Accounts.create_user(@email, @password)
+    %{user: user}
+  end
+
+  describe "create user" do
+    test "creates user when email is availabile", %{conn: conn} do
+      response =
+        conn
+        |> post(Routes.user_path(conn, :create), %{"email" => @email, "password" => @password})
+        |> json_response(201)
+
+      response_data = response["data"]
+
+        assert response_data["id"]
+        assert response_data["access_token"] == nil
+        assert response_data["email"] == @email
+        assert response_data["password_hash"]
+    end
+
+    test "returns error when email is unavailable", %{conn: conn, user: user} do
+      {:ok, %User{} = user} = Accounts.create_user(@email, @password)
+
+      response =
+        conn
+        |> post(Routes.user_path(conn, :create), %{"email" => @email, "password" => @password})
+        |> json_response(201)
+
+      assert response == "hi"
+
+    end
+  end
 
   # describe "create user" do
   #   test "renders user when data is valid", %{conn: conn} do
@@ -89,8 +119,8 @@ defmodule ServerWeb.UserControllerTest do
   #   end
   # end
 
-  defp create_user(_) do
-    user = fixture(:user)
-    {:ok, user: user}
-  end
+  # defp create_user(_) do
+  #   user = fixture(:user)
+  #   {:ok, user: user}
+  # end
 end

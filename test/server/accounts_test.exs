@@ -7,12 +7,6 @@ defmodule Server.AccountsTest do
   @email "shivangs44@gmail.com"
   @password "bubbles"
 
-
-  def user_fixture() do
-    {:ok, user} = Accounts.create_user(@email, @password)
-    user
-  end
-
   setup do
     Ecto.Adapters.SQL.Sandbox.allow(Server.Repo, self(), Accounts)
     {:ok, %User{} = user} = Accounts.create_user(@email, @password)
@@ -37,7 +31,7 @@ defmodule Server.AccountsTest do
   end
 
   describe "create_user/2 when email is taken" do
-    test "it returns an error", context do
+    test "it returns an error", _context do
       assert {:error, msg} = Accounts.create_user(@email, @password)
       assert msg == Accounts.email_taken_error()
     end
