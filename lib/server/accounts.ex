@@ -59,7 +59,6 @@ defmodule Server.Accounts do
           {:ok, _} ->
             access_token = :crypto.strong_rand_bytes(32) |> Base.encode16 |> String.downcase
             User.changeset(user, %{access_token: access_token}) |> Repo.update
-            {:ok, access_token}
         end
     end
   end

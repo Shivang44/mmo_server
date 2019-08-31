@@ -1,5 +1,6 @@
 defmodule ServerWeb.UserControllerTest do
-  use ServerWeb.ConnCase
+  use ServerWeb.ConnCase, async: true
+  require IEx
 
   alias Server.Accounts
   alias Server.Accounts.User
@@ -7,35 +8,13 @@ defmodule ServerWeb.UserControllerTest do
   @email "shivangs44@gmail.com"
   @password "bubbles"
 
-
-  # @create_attrs %{
-  #   access_token: "some access_token",
-  #   email: "some email",
-  #   password_hash: "some password_hash"
-  # }
-
-  # @invalid_attrs %{access_token: nil, email: nil, password_hash: nil}
-
-  # def fixture(:user) do
-  #   {:ok, user} = Accounts.create_user(@create_attrs)
-  #   user
-  # end
-
   setup %{conn: conn} do
+    Ecto.Adapters.SQL.Sandbox.allow(Server.Repo, self(), Accounts)
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
 
-  # setup do
-  #   Ecto.Adapters.SQL.Sandbox.allow(Server.Repo, self(), Accounts)
-  # end
-
-  defp create_user(context) do
-    {:ok, %User{} = user} = Accounts.create_user(@email, @password)
-    %{user: user}
-  end
-
-  describe "create user" do
-    test "creates user when email is availabile", %{conn: conn} do
+  describe "create" do
+    test "creates user when email is available", %{conn: conn} do
       response =
         conn
         |> post(Routes.user_path(conn, :create), %{"email" => @email, "password" => @password})
@@ -43,84 +22,64 @@ defmodule ServerWeb.UserControllerTest do
 
       response_data = response["data"]
 
-        assert response_data["id"]
-        assert response_data["access_token"] == nil
-        assert response_data["email"] == @email
-        assert response_data["password_hash"]
+      query = from u in User, where: u.id == ^response_data["id"]
+      user_from_db = Server.Repo.one!(query)
+
+      assert response_data["id"] == user_from_db.id
+      assert response_data["access_token"] == user_from_db.access_token
+      assert response_data["email"] == user_from_db.email
+      assert response_data["password_hash"] == user_from_db.password_hash
     end
 
-    test "returns error when email is unavailable", %{conn: conn, user: user} do
-      {:ok, %User{} = user} = Accounts.create_user(@email, @password)
+    test "returns error when email is unavailable", %{conn: conn} do
+      {:ok, %User{} = _} = Accounts.create_user(@email, @password)
 
       response =
         conn
         |> post(Routes.user_path(conn, :create), %{"email" => @email, "password" => @password})
-        |> json_response(201)
+        |> json_response(422)
 
-      assert response == "hi"
-
+      assert response["error"] == Accounts.email_taken_error()
     end
   end
 
-  # describe "create user" do
-  #   test "renders user when data is valid", %{conn: conn} do
-  #     conn = post(conn, Routes.user_path(conn, :create), user: @create_attrs)
-  #     assert %{"id" => id} = json_response(conn, 201)["data"]
+  describe "login when account doesn't exist" do
+    test "it returns an account doesn't exist error", %{conn: conn} do
+      response =
+        conn
+        |> post(Routes.user_path(conn, :login), %{"email" => @email, "password" => @password})
+        |> json_response(422)
 
-  #     conn = get(conn, Routes.user_path(conn, :show, id))
+      assert response["error"] == Accounts.account_does_not_exist_error()
+    end
+  end
 
-  #     assert %{
-  #              "id" => id,
-  #              "access_token" => "some access_token",
-  #              "email" => "some email",
-  #              "password_hash" => "some password_hash"
-  #            } = json_response(conn, 200)["data"]
-  #   end
+  describe "login when account exists" do
+    test "it returns access_token with a valid login", %{conn: conn} do
+      {:ok, %User{} = _} = Accounts.create_user(@email, @password)
 
-  #   test "renders errors when data is invalid", %{conn: conn} do
-  #     conn = post(conn, Routes.user_path(conn, :create), user: @invalid_attrs)
-  #     assert json_response(conn, 422)["errors"] != %{}
-  #   end
-  # end
+      response =
+        conn
+        |> post(Routes.user_path(conn, :login), %{"email" => @email, "password" => @password})
+        |> json_response(202)
 
-  # describe "update user" do
-  #   setup [:create_user]
+      response_data = response["data"]
 
-  #   test "renders user when data is valid", %{conn: conn, user: %User{id: id} = user} do
-  #     conn = put(conn, Routes.user_path(conn, :update, user), user: @update_attrs)
-  #     assert %{"id" => ^id} = json_response(conn, 200)["data"]
+      query = from u in User, where: u.id == ^response_data["id"]
+      user_from_db = Server.Repo.one!(query)
 
-  #     conn = get(conn, Routes.user_path(conn, :show, id))
+      assert response_data["access_token"] == user_from_db.access_token
+    end
 
-  #     assert %{
-  #              "id" => id,
-  #              "access_token" => "some updated access_token",
-  #              "email" => "some updated email",
-  #              "password_hash" => "some updated password_hash"
-  #            } = json_response(conn, 200)["data"]
-  #   end
+    test "it returns an invalid password error when invalid login", %{conn: conn} do
+      {:ok, %User{} = _} = Accounts.create_user(@email, @password)
 
-  #   test "renders errors when data is invalid", %{conn: conn, user: user} do
-  #     conn = put(conn, Routes.user_path(conn, :update, user), user: @invalid_attrs)
-  #     assert json_response(conn, 422)["errors"] != %{}
-  #   end
-  # end
+      response =
+        conn
+        |> post(Routes.user_path(conn, :login), %{"email" => @email, "password" => @password <> "_"})
+        |> json_response(422)
 
-  # describe "delete user" do
-  #   setup [:create_user]
-
-  #   test "deletes chosen user", %{conn: conn, user: user} do
-  #     conn = delete(conn, Routes.user_path(conn, :delete, user))
-  #     assert response(conn, 204)
-
-  #     assert_error_sent 404, fn ->
-  #       get(conn, Routes.user_path(conn, :show, user))
-  #     end
-  #   end
-  # end
-
-  # defp create_user(_) do
-  #   user = fixture(:user)
-  #   {:ok, user: user}
-  # end
+      assert response["error"] == Accounts.invalid_password_error()
+    end
+  end
 end

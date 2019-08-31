@@ -23,6 +23,11 @@ defmodule ServerWeb.ConnCase do
 
       # The default endpoint for testing
       @endpoint ServerWeb.Endpoint
+
+      # Ecto stuff
+      import Ecto
+      import Ecto.Changeset
+      import Ecto.Query
     end
   end
 
