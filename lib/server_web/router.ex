@@ -7,7 +7,8 @@ defmodule ServerWeb.Router do
 
   scope "/api", ServerWeb do
     pipe_through :api
-    resources "/users", UserController, except: [:new, :edit]
+    post "/users", UserController, :create
+    get "/users", UserController, :index
     post "/login", UserController, :login
   end
 end
