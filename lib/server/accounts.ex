@@ -53,7 +53,7 @@ defmodule Server.Accounts do
       [%Character{}, ...]
 
   """
-  def list_characters do
+  def list_characters(_user_id) do
     Repo.all(Character)
   end
 
