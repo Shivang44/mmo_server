@@ -9,9 +9,10 @@ defmodule ServerWeb.CharacterController do
   action_fallback ServerWeb.FallbackController
 
   defp authenticate(conn, _) do
-    case Accounts.authenticate(%{"user_id" => conn.params["user_id"], "access_token" => get_req_header(conn, "access_token")}) do
+    access_token = conn |> get_req_header("access_token") |> List.first
+    case Accounts.authenticate(%{"user_id" => conn.params["user_id"], "access_token" => access_token}) do
       :ok -> conn
-      :error -> conn |> resp(:unauthorized, "Invalid access token") |> halt()
+      :error -> conn |> put_status(:unauthorized) |> put_view(ServerWeb.ErrorView) |> render("error.json", msg: "Invalid access token") |> halt()
     end
   end
 

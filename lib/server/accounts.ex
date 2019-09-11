@@ -43,7 +43,10 @@ defmodule Server.Accounts do
   end
 
   def authenticate(%{"user_id" => user_id, "access_token" => access_token}) do
-    :error
+    case Repo.one(from u in User, where: u.id == ^user_id and u.access_token == ^access_token) do
+      nil -> :error
+      _ -> :ok
+    end
   end
 
   alias Server.Accounts.Character
