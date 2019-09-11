@@ -42,6 +42,10 @@ defmodule Server.Accounts do
     end
   end
 
+  def authenticate(%{"user_id" => user_id, "access_token" => access_token}) do
+    :error
+  end
+
   alias Server.Accounts.Character
 
   def list_characters(_user_id) do
