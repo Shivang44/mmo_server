@@ -12,7 +12,7 @@ defmodule ServerWeb.UserController do
   end
 
   def create(conn, %{"email" => email, "password" => password}) do
-    with {:ok, %User{} = user} <- Accounts.create_user(email, password) do
+    with {:ok, %User{} = user} <- Accounts.create_user(%{"email" => email, "password" => password}) do
       conn
       |> put_status(:created)
       |> render("show.json", user: user)
@@ -20,7 +20,7 @@ defmodule ServerWeb.UserController do
   end
 
   def login(conn, %{"email" => email, "password" => password}) do
-    with {:ok, %User{} = user} <- Accounts.authenticate(email, password) do
+    with {:ok, %User{} = user} <- Accounts.authenticate(%{"email" => email, "password" => password}) do
       conn
       |> put_status(:accepted)
       |> render("show.json", user: user)

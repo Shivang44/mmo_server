@@ -5,8 +5,10 @@ defmodule ServerWeb.UserControllerTest do
   alias Server.Accounts
   alias Server.Accounts.User
 
-  @email "shivangs44@gmail.com"
-  @password "bubbles"
+  @create_attrs %{
+    "email" => "shivangs44@gmail.com",
+    "password" => "bubbles"
+  }
 
   setup %{conn: conn} do
     Ecto.Adapters.SQL.Sandbox.allow(Server.Repo, self(), Accounts)
@@ -14,7 +16,7 @@ defmodule ServerWeb.UserControllerTest do
   end
 
   defp create_user(_context) do
-    {:ok, %User{} = user} = Accounts.create_user(@email, @password)
+    {:ok, %User{} = user} = Accounts.create_user(@create_attrs)
     %{user: user}
   end
 
@@ -24,7 +26,7 @@ defmodule ServerWeb.UserControllerTest do
     test ":create returns an email taken error", %{conn: conn} do
       response =
         conn
-        |> post(Routes.user_path(conn, :create), %{"email" => @email, "password" => @password})
+        |> post(Routes.user_path(conn, :create), @create_attrs)
         |> json_response(422)
 
       assert response["error"] == Accounts.email_taken_error()
@@ -33,7 +35,7 @@ defmodule ServerWeb.UserControllerTest do
     test ":login sets access_token and returns updated user when given valid credentials", %{conn: conn} do
       response =
         conn
-        |> post(Routes.user_path(conn, :login), %{"email" => @email, "password" => @password})
+        |> post(Routes.user_path(conn, :login), @create_attrs)
         |> json_response(202)
 
       response_data = response["data"]
@@ -50,7 +52,7 @@ defmodule ServerWeb.UserControllerTest do
     test ":login returns invalid password error when given invalid credentials", %{conn: conn} do
       response =
         conn
-        |> post(Routes.user_path(conn, :login), %{"email" => @email, "password" => @password <> "_"})
+        |> post(Routes.user_path(conn, :login), Map.replace!(@create_attrs, "password", @create_attrs["password"] <> "_"))
         |> json_response(422)
 
       assert response["error"] == Accounts.invalid_password_error()
@@ -62,7 +64,7 @@ defmodule ServerWeb.UserControllerTest do
     test ":create creates user", %{conn: conn} do
       response =
         conn
-        |> post(Routes.user_path(conn, :create), %{"email" => @email, "password" => @password})
+        |> post(Routes.user_path(conn, :create), @create_attrs)
         |> json_response(201)
 
       response_data = response["data"]
@@ -79,7 +81,7 @@ defmodule ServerWeb.UserControllerTest do
     test ":login returns account doesn't exist error", %{conn: conn} do
       response =
         conn
-        |> post(Routes.user_path(conn, :login), %{"email" => @email, "password" => @password})
+        |> post(Routes.user_path(conn, :login), @create_attrs)
         |> json_response(422)
 
       assert response["error"] == Accounts.account_does_not_exist_error()

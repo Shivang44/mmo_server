@@ -17,7 +17,7 @@ defmodule Server.Accounts do
     Repo.all(User)
   end
 
-  def create_user(email, password) do
+  def create_user(%{"email" => email, "password" => password}) do
     password_hash = Argon2.hash_pwd_salt(password)
     attrs = %{ email: email, password_hash: password_hash }
 
@@ -28,7 +28,7 @@ defmodule Server.Accounts do
     end
   end
 
-  def authenticate(email, password) do
+  def authenticate(%{"email" => email, "password" => password}) do
     user = Repo.one(from u in User, where: u.email == ^email)
     case user do
       nil -> {:error, account_does_not_exist_error()}
