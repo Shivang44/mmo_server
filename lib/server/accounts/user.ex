@@ -1,11 +1,13 @@
 defmodule Server.Accounts.User do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Server.Accounts.Character
 
   schema "users" do
     field :access_token, :string
     field :email, :string
     field :password_hash, :string
+    has_many :characters, Character
 
     timestamps()
   end

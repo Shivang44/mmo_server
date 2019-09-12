@@ -1,6 +1,7 @@
 defmodule Server.Accounts.Character do
   use Ecto.Schema
   import Ecto.Changeset
+  alias Server.Accounts.User
 
   schema "characters" do
     field :class, :string
