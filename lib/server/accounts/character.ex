@@ -5,7 +5,7 @@ defmodule Server.Accounts.Character do
   schema "characters" do
     field :class, :string
     field :name, :string
-    field :user_id, :integer
+    belongs_to :user, User
 
     timestamps()
   end

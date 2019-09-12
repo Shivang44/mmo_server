@@ -3,10 +3,16 @@ defmodule Server.AccountsTest do
 
   alias Server.Accounts
   alias Server.Accounts.User
+  alias Server.Accounts.Character
 
-  @create_attrs %{
+  @user_create_attrs %{
     "email" => "shivangs44@gmail.com",
     "password" => "bubbles"
+  }
+
+  @character_create_attrs %{
+    "name" => "shivang",
+    "class" => "archer"
   }
 
   setup do
@@ -15,20 +21,24 @@ defmodule Server.AccountsTest do
   end
 
   defp create_user(_context) do
-    {:ok, %User{} = user} = Accounts.create_user(@create_attrs)
+    {:ok, %User{} = user} = Accounts.create_user(@user_create_attrs)
     %{user: user}
+  end
+
+  defp create_character(_context) do
+    {:ok, %Character{} = character} = Accounts.create_character(a)
   end
 
   describe "when account exists" do
     setup [:create_user]
 
     test "create_user/2 returns an error" do
-      {:error, msg} = Accounts.create_user(@create_attrs)
+      {:error, msg} = Accounts.create_user(@user_create_attrs)
       assert msg == Accounts.email_taken_error()
     end
 
     test "authenticate/2 returns user when valid login" do
-      {:ok, user} = Accounts.authenticate(@create_attrs)
+      {:ok, user} = Accounts.authenticate(@user_create_attrs)
 
       query = from u in User, where: u.id == ^user.id
       user_from_db = Server.Repo.one!(query)
@@ -37,7 +47,7 @@ defmodule Server.AccountsTest do
     end
 
     test "authenticate/2 returns error when invalid logn" do
-      {:error, msg} = Accounts.authenticate(Map.replace!(@create_attrs, "password", @create_attrs["password"] <> "_"))
+      {:error, msg} = Accounts.authenticate(Map.replace!(@user_create_attrs, "password", @user_create_attrs["password"] <> "_"))
       assert msg == Accounts.invalid_password_error()
     end
 
@@ -45,7 +55,7 @@ defmodule Server.AccountsTest do
 
   describe "when account doesn't exist" do
     test "create_user/2 creates a user" do
-      {:ok, %User{} = user} = Accounts.create_user(@create_attrs)
+      {:ok, %User{} = user} = Accounts.create_user(@user_create_attrs)
 
       query = from u in User, where: u.id == ^user.id
       user_from_db = Server.Repo.one!(query)
@@ -54,10 +64,16 @@ defmodule Server.AccountsTest do
     end
 
     test "authenticate/2 returns an error" do
-      {:error, msg} = Accounts.authenticate(@create_attrs)
+      {:error, msg} = Accounts.authenticate(@user_create_attrs)
       assert msg == Accounts.account_does_not_exist_error()
     end
   end
+
+  # describe "when an account exists and has characters" do
+  #   setup [:create_user, :create_character]
+  # end
+
+
 
   # describe "characters" do
   #   alias Server.Accounts.Character
