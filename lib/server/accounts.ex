@@ -52,7 +52,7 @@ defmodule Server.Accounts do
   alias Server.Accounts.Character
 
   def list_characters(user_id) do
-    Repo.all(from u in User, where: u.id == ^user_id)
+    Repo.all(from c in Character, where: c.user_id == ^user_id)
   end
 
 

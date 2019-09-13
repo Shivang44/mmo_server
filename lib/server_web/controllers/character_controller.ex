@@ -28,5 +28,4 @@ defmodule ServerWeb.CharacterController do
       |> render("show.json", character: character)
     end
   end
-
 end
