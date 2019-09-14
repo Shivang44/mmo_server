@@ -14,6 +14,14 @@ defmodule ServerWeb.ErrorView do
   #   %{errors: %{detail: Phoenix.Controller.status_message_from_template(template)}}
   # end
 
+  def render("500.json", _assigns) do
+    %{errors: %{detail: "Internal Server Error"}}
+  end
+
+  def render("400.json", _assigns) do
+    %{errors: %{detail: "Bad Request"}}
+  end
+
   def render("error.json", %{msg: msg}) do
     %{error: msg}
   end
