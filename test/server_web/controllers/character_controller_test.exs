@@ -5,6 +5,8 @@ defmodule ServerWeb.CharacterControllerTest do
   alias Server.Accounts.Character
   alias Server.Accounts.User
 
+  require IEx
+
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
@@ -16,22 +18,24 @@ defmodule ServerWeb.CharacterControllerTest do
 
   defp create_user(_context) do
     {:ok, %User{} = user} = Accounts.create_user(@user_create_attrs)
-    Accounts.authenticate(@user_create_attrs)
-    %{user: user}
+    {:ok, authed_user} = Accounts.authenticate(@user_create_attrs)
+    %{user: authed_user}
   end
 
   defp authenticate(%{conn: conn, user: user}) do
     put_req_header(conn, "access_token", user.access_token)
+    :ok
   end
 
-  describe "when a user has characters" do
-    setup [:create_user, :authenticate]
-    test ":index returns all characters for that user" do
+  # describe "when a user has characters" do
+  #   setup [:create_user, :authenticate]
+  #   test ":index returns all characters for that user" do
 
-    end
-  end
+  #   end
+  # end
 
   describe "when a user doesn't have characters" do
+    setup [:create_user, :authenticate]
     test ":index returns no characters" do
       conn = get(conn, Routes.user_character_path(conn, :index))
       assert json_response(conn, 200)["data"] == []
