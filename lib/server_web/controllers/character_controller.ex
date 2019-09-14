@@ -22,7 +22,8 @@ defmodule ServerWeb.CharacterController do
   end
 
   def create(conn, %{"name" => name, "class" => class, "user_id" => user_id}) do
-    with {:ok, %Character{} = character} <- Accounts.create_character(%{"name" => name, "class" => class, "user_id" => user_id}) do
+    character =  Accounts.create_character(%{"name" => name, "class" => class, "user_id" => user_id})
+    with {:ok, %Character{} = character} <- character do
       conn
       |> put_status(:created)
       |> render("show.json", character: character)
