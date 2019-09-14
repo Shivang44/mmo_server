@@ -16,5 +16,6 @@ defmodule Server.Accounts.Character do
     character
     |> cast(attrs, [:name, :class, :user_id])
     |> validate_required([:name, :class, :user_id])
+    |> unique_constraint(:name)
   end
 end

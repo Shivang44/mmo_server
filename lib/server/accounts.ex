@@ -8,10 +8,10 @@ defmodule Server.Accounts do
   alias Server.Accounts.User
   require Logger
 
-  @spec email_taken_error :: <<_::88>>
   def email_taken_error, do: "Email taken"
   def invalid_password_error, do: "Invalid password"
   def account_does_not_exist_error, do: "Account does not exist"
+  def character_name_taken_error, do: "Character name taken"
 
   def list_users do
     Repo.all(User)
@@ -23,8 +23,7 @@ defmodule Server.Accounts do
 
     case %User{} |> User.changeset(attrs) |> Repo.insert() do
       {:ok, user} -> {:ok, user}
-      {:error, _} ->
-        {:error, email_taken_error()}
+      {:error, _} -> {:error, email_taken_error()}
     end
   end
 
@@ -57,8 +56,9 @@ defmodule Server.Accounts do
 
 
   def create_character(attrs \\ %{}) do
-    %Character{}
-    |> Character.changeset(attrs)
-    |> Repo.insert()
+    case %Character{} |> Character.changeset(attrs) |> Repo.insert() do
+      {:ok, character} -> {:ok, character}
+      {:error, _} -> {:error, character_name_taken_error()}
+    end
   end
 end

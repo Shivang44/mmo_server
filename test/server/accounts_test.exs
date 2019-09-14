@@ -92,7 +92,10 @@ defmodule Server.AccountsTest do
     test "list_characters/1 returns an empty array", %{user: user} do
       assert Accounts.list_characters(user.id) == []
     end
+  end
 
+  describe "when the character name is available" do
+    setup [:create_user]
     test "create_character/1 creates a character", %{user: user} do
       create_params = %{
         "name" => "draucia",
@@ -106,6 +109,20 @@ defmodule Server.AccountsTest do
       character_from_db = Server.Repo.one!(query)
 
       assert character_from_db == created_character
+    end
+  end
+
+  describe "when the character name is not available" do
+    setup [:create_user]
+    test "create_character/1 returns an error", %{user: user} do
+      create_params = %{
+        "name" => "shivang",
+        "class" => "mage",
+        "user_id" => user.id
+      }
+      user_1 = Accounts.create_character(create_params)
+      user_2 = Accounts.create_character(create_params)
+      require IEx; IEx.pry
     end
   end
 end

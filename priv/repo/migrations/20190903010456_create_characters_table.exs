@@ -10,6 +10,7 @@ defmodule Server.Repo.Migrations.CreateCharactersTable do
       timestamps()
     end
 
+    create unique_index(:characters, [:name])
 
   end
 end

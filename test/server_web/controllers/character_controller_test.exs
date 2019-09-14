@@ -74,4 +74,6 @@ defmodule ServerWeb.CharacterControllerTest do
     end
   end
 
+  describe "when "
+
 end
