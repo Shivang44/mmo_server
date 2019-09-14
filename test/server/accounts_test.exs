@@ -92,5 +92,20 @@ defmodule Server.AccountsTest do
     test "list_characters/1 returns an empty array", %{user: user} do
       assert Accounts.list_characters(user.id) == []
     end
+
+    test "create_character/1 creates a character", %{user: user} do
+      create_params = %{
+        "name" => "draucia",
+        "class" => "mage",
+        "user_id" => user.id
+      }
+
+      {:ok, %Character{} = created_character} = Accounts.create_character(create_params)
+
+      query = from c in Character, where: c.id == ^created_character.id
+      character_from_db = Server.Repo.one!(query)
+
+      assert character_from_db == created_character
+    end
   end
 end
