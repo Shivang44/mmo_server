@@ -4,6 +4,7 @@ defmodule ServerWeb.CharacterControllerTest do
   alias Server.Accounts
   alias Server.Accounts.Character
   alias Server.Accounts.User
+  alias ServerWeb.CharacterController
 
   require IEx
 
@@ -57,10 +58,25 @@ defmodule ServerWeb.CharacterControllerTest do
     %{conn: put_req_header(conn, "access_token", user.access_token)}
   end
 
+  describe "when a valid access_token is not provided" do
+    setup [:create_user]
+
+    test ":index returns an authentication error", %{conn: conn, user: user} do
+      conn = get(conn, Routes.user_character_path(conn, :index, user.id))
+      response = json_response(conn, 401)
+      assert response["error"] == CharacterController.invalid_access_token_error()
+    end
+
+    test ":create returns an authentication error", %{conn: conn, user: user}  do
+      conn = post(conn, Routes.user_character_path(conn, :create, user.id))
+      response = json_response(conn, 401)
+      assert response["error"] == CharacterController.invalid_access_token_error()
+    end
+  end
 
   describe "when a user doesn't have characters" do
     setup [:create_user, :authenticate]
-    test ":index returns no characters when access_token is valid", %{conn: conn, user: user} do
+    test ":index returns no characters", %{conn: conn, user: user} do
       conn = get(conn, Routes.user_character_path(conn, :index, user.id))
       assert json_response(conn, 200)["data"] == []
     end

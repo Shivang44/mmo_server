@@ -8,11 +8,13 @@ defmodule ServerWeb.CharacterController do
 
   action_fallback ServerWeb.FallbackController
 
+  def invalid_access_token_error, do: "Invalid access token"
+
   defp authenticate(conn, _) do
     access_token = conn |> get_req_header("access_token") |> List.first
     case Accounts.authenticate(%{"user_id" => conn.params["user_id"], "access_token" => access_token}) do
       :ok -> conn
-      :error -> conn |> put_status(:unauthorized) |> put_view(ServerWeb.ErrorView) |> render("error.json", msg: "Invalid access token") |> halt()
+      :error -> conn |> put_status(:unauthorized) |> put_view(ServerWeb.ErrorView) |> render("error.json", msg: invalid_access_token_error()) |> halt()
     end
   end
 
