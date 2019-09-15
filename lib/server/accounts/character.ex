@@ -11,7 +11,6 @@ defmodule Server.Accounts.Character do
     timestamps()
   end
 
-  @doc false
   def changeset(character, attrs) do
     character
     |> cast(attrs, [:name, :class, :user_id])

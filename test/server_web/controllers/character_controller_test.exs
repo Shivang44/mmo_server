@@ -74,6 +74,37 @@ defmodule ServerWeb.CharacterControllerTest do
     end
   end
 
-  describe "when "
+  describe "when a character name is available" do
+    setup [:create_user, :authenticate]
+    test ":create creates a character", %{user: user, conn: conn} do
+      create_attrs = %{
+        "name" => "shivang",
+        "class" => "mage",
+        "user_id" => user.id
+      }
+
+      response =
+        conn
+        |> post(Routes.user_character_path(conn, :create, user.id), create_attrs)
+        |> json_response(201)
+
+      response_with_added_id = Map.put(create_attrs, "id", response["data"]["id"])
+      assert response["data"] == response_with_added_id
+
+    end
+  end
+
+  describe "when a character name is not available" do
+    setup [:create_user, :create_characters, :authenticate]
+    test ":create returns an error", %{user: user, characters: characters, conn: conn} do
+      already_created_character = List.first(characters)
+      response =
+        conn
+        |> post(Routes.user_character_path(conn, :create, user.id), already_created_character)
+        |> json_response(422)
+
+      assert response["error"] == Accounts.character_name_taken_error()
+    end
+  end
 
 end
