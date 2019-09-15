@@ -120,9 +120,9 @@ defmodule Server.AccountsTest do
         "class" => "mage",
         "user_id" => user.id
       }
-      user_1 = Accounts.create_character(create_params)
-      user_2 = Accounts.create_character(create_params)
-      require IEx; IEx.pry
+      Accounts.create_character(create_params)
+      {:error, msg} = Accounts.create_character(create_params)
+      assert msg == Accounts.character_name_taken_error()
     end
   end
 end
