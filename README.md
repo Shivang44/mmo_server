@@ -4,7 +4,7 @@ This is an in-development server for an upcoming mobile MMO I'm creating.
 It contains two main components:
 
 - A (fully tested) REST server in phoenix that handles account-level tasks (creating an account, characters, etc)
-- A server-authortative server that will handle actual gameplay logic (haven't started this yet)
+- A server-authoritative server that will handle actual gameplay logic (haven't started this)
 
 # Server
 
