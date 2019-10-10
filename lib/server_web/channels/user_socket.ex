@@ -2,7 +2,7 @@ defmodule ServerWeb.UserSocket do
   use Phoenix.Socket
 
   ## Channels
-  # channel "room:*", ServerWeb.RoomChannel
+  channel "game_server", ServerWeb.GameServerChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -15,7 +15,8 @@ defmodule ServerWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(_params, socket, _connect_info) do
+  def connect(params, socket, _connect_info) do
+    IO.puts "TODO: Authenticate user's params: #{inspect params}"
     {:ok, socket}
   end
 
