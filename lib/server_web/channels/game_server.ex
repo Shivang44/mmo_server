@@ -6,8 +6,14 @@ defmodule ServerWeb.GameServerChannel do
     {:ok, socket}
   end
 
-  def join(_private_room_id, _params, _socket) do
+  def join(_, _params, _socket) do
     {:error, %{reason: "unauthorized"}}
   end
+
+  def handle_in("client_input", msg, socket) do
+    broadcast!(socket, "world_update", %{body: "world_update"})
+    {:reply, {:ok, %{}}, socket}
+  end
+
 
 end
