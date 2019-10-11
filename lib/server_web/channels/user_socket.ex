@@ -1,5 +1,6 @@
 defmodule ServerWeb.UserSocket do
   use Phoenix.Socket
+  alias Server.Accounts
 
   ## Channels
   channel "game_server", ServerWeb.GameServerChannel
@@ -15,9 +16,11 @@ defmodule ServerWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(params, socket, _connect_info) do
-    IO.puts "TODO: Authenticate user's params: #{inspect params}"
-    {:ok, socket}
+  def connect(%{"user_id" => user_id, "access_token" => access_token}, socket, _connect_info) do
+    case Accounts.authenticate(%{"user_id" => user_id, "access_token" => access_token}) do
+      :ok -> {:ok, socket}
+      :error -> :error
+    end
   end
 
   # Socket id's are topics that allow you to identify all sockets for a given user:
