@@ -11,6 +11,7 @@ defmodule Server.Application do
       Server.Repo,
       ServerWeb.Endpoint,
       Server.InputQueue,
+      Server.TickExecuter,
       Server.TickScheduler
     ]
 
