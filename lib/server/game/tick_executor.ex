@@ -28,13 +28,19 @@ defmodule Server.TickExecuter do
         with true <- Server.InputQueue.length > 0,
              input <- Server.InputQueue.pop
         do
-            # Validate Input
-            # Process Input
+            with true <- valid_input(input) do
+                # Process Input
+            end
+
             process_inputs()
         end
     end
 
     def send_world_state() do
         IO.puts "Sent world state update to all clients"
+    end
+
+    def valid_input(input) do
+        true
     end
 end
