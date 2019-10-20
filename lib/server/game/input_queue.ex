@@ -1,6 +1,8 @@
 defmodule Server.InputQueue do
     use Agent
     
+    # TODO: Test queue
+    
     def start_link(_arg) do
         Agent.start_link(fn -> :queue.new end, name: __MODULE__)
     end
@@ -16,6 +18,4 @@ defmodule Server.InputQueue do
     def length do
         Agent.get(__MODULE__, fn(queue) -> :queue.len(queue) end)
     end
-
-
 end
