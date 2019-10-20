@@ -10,7 +10,8 @@ defmodule Server.Application do
     children = [
       Server.Repo,
       ServerWeb.Endpoint,
-      Server.InputQueue
+      Server.InputQueue,
+      Server.TickScheduler
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

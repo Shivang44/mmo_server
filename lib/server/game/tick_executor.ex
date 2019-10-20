@@ -1,3 +1,3 @@
-defmodule TickExecuter do
+defmodule Server.TickExecuter do
     use GenServer
 end
