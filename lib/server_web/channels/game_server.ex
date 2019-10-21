@@ -12,6 +12,7 @@ defmodule ServerWeb.GameServerChannel do
 
   def handle_in("client_input", input, socket) do
     # broadcast!(socket, "world_update", %{body: "world_update"})
+    # TODO: Authorize user. If they do not own the character, reject input (perhaps dc and ban user)
     Server.InputQueue.push(input)
     {:reply, {:ok, %{}}, socket}
   end

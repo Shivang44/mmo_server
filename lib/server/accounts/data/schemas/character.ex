@@ -7,6 +7,7 @@ defmodule Server.Accounts.Character do
     field :class, :string
     field :name, :string
     belongs_to :user, User
+    has_one :position, Server.Character.Position
 
     timestamps()
   end
