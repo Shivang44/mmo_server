@@ -6,8 +6,11 @@ defmodule Server.Accounts.Character do
   schema "characters" do
     field :class, :string
     field :name, :string
+    field :x, :float
+    field :y, :float
+    field :z, :float
+    
     belongs_to :user, User
-    has_one :position, Server.Character.Position
 
     timestamps()
   end
