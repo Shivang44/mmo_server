@@ -12,7 +12,8 @@ defmodule Server.Application do
       ServerWeb.Endpoint,
       Server.InputQueue,
       Server.TickExecuter,
-      Server.TickScheduler
+      Server.TickScheduler,
+      ServerWeb.Presence
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
