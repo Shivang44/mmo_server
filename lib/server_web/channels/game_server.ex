@@ -1,13 +1,23 @@
 defmodule ServerWeb.GameServerChannel do
   use Phoenix.Channel
+  alias ServerWeb.Presence
 
-  def join("game_server", _message, socket) do
-    IO.puts "Client joined game_server channel"
-    {:ok, socket}
+  def join("room:" <> room, _message, socket) do
+    IO.puts "Client joined game_server channel #{inspect room}"
+    send(self(), :after_join)
+    {:ok, assign(socket, :room, room)}
   end
 
   def join(_, _params, _socket) do
     {:error, %{reason: "unauthorized"}}
+  end
+
+  def handle_info(:after_join, socket) do
+    {:ok, _} = Presence.track(socket, socket.assigns.user_id, %{
+      character_id: socket.assigns.character_id
+    })
+    IO.puts "Presence: #{inspect Presence.list("room:" <> socket.assigns.room)}"
+    {:noreply, socket}
   end
 
   def handle_in("client_input", input, socket) do

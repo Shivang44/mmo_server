@@ -3,7 +3,7 @@ defmodule ServerWeb.UserSocket do
   alias Server.Accounts
 
   ## Channels
-  channel "game_server", ServerWeb.GameServerChannel
+  channel "room:*", ServerWeb.GameServerChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -16,9 +16,9 @@ defmodule ServerWeb.UserSocket do
   #
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
-  def connect(%{"user_id" => user_id, "access_token" => access_token}, socket, _connect_info) do
+  def connect(%{"user_id" => user_id, "character_id" => character_id, "access_token" => access_token}, socket, _connect_info) do
     case Accounts.authenticate(%{"user_id" => user_id, "access_token" => access_token}) do
-      :ok -> {:ok, socket}
+      :ok -> {:ok, assign(socket, :user_id, user_id) |> assign(:character_id, character_id)}
       :error -> :error
     end
   end
