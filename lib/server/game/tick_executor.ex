@@ -37,7 +37,7 @@ defmodule Server.TickExecuter do
     end
 
     def send_world_state() do
-        IO.puts "Sent world state update to all clients"
+        # IO.puts "Sent world state update to all clients"
     end
 
     def valid_input(input) do
