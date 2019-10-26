@@ -12,6 +12,7 @@ defmodule ServerWeb.GameServerChannel do
     {:error, %{reason: "unauthorized"}}
   end
 
+  @spec handle_info(:after_join, Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
     {:ok, _} = Presence.track(socket, socket.assigns.user_id, %{
       character_id: socket.assigns.character_id
@@ -22,8 +23,7 @@ defmodule ServerWeb.GameServerChannel do
 
   def handle_in("client_input", input, socket) do
     # broadcast!(socket, "world_update", %{body: "world_update"})
-    # TODO: Authorize user. If they do not own the character, reject input (perhaps dc and ban user)
-    Server.InputQueue.push(input)
+    Server.InputQueue.push(%{character_id: socket.assigns.character_id, input: input})
     {:reply, {:ok, %{}}, socket}
   end
 end

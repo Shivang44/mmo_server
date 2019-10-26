@@ -28,10 +28,14 @@ defmodule Server.TickExecuter do
         with true <- Server.InputQueue.length > 0,
              input <- Server.InputQueue.pop
         do
-            with true <- valid_input(input) do
-                # Process Input
+            case input do
+                %{character_id: character_id, input: %{"move" => %{"x" => x, "y" => y, "z" => z}}} ->
+                    input = %{character_id: character_id, x: x, y: y, z: z}
+                    with true <- Server.Characters.validate_movement(input) do
+                        Server.Characters.update_position(input)
+                        IO.puts "Updated user's input"
+                    end
             end
-
             process_inputs()
         end
     end

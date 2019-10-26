@@ -4,7 +4,7 @@ defmodule Server.Characters do
     alias Server.Accounts.Character
     alias Server.Repo
 
-    def validate_movement(%{character_id: character_id, x: x, y: y, z: z}) do
+    def validate_movement(%{character_id: _character_id, x: _x, y: _y, z: _z}) do
         true
     end
 

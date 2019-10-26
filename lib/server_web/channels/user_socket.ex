@@ -17,6 +17,7 @@ defmodule ServerWeb.UserSocket do
   # See `Phoenix.Token` documentation for examples in
   # performing token verification on connect.
   def connect(%{"user_id" => user_id, "character_id" => character_id, "access_token" => access_token}, socket, _connect_info) do
+    # TODO: Authorize user. If they do not own the character, reject input (perhaps dc and ban user)
     case Accounts.authenticate(%{"user_id" => user_id, "access_token" => access_token}) do
       :ok -> {:ok, assign(socket, :user_id, user_id) |> assign(:character_id, character_id)}
       :error -> :error
