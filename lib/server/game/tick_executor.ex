@@ -1,5 +1,6 @@
 defmodule Server.TickExecuter do
     use GenServer
+    alias ServerWeb.Presence
 
     # Public API
     def start_link(_args) do
@@ -33,7 +34,6 @@ defmodule Server.TickExecuter do
                     input = %{character_id: character_id, x: x, y: y, z: z}
                     with true <- Server.Characters.validate_movement(input) do
                         Server.Characters.update_position(input)
-                        IO.puts "Updated user's input"
                     end
             end
             process_inputs()
@@ -41,7 +41,9 @@ defmodule Server.TickExecuter do
     end
 
     def send_world_state() do
-        # IO.puts "Sent world state update to all clients"
+        # For now we will only send updates to room 0:0. Eventually this will be loop over all rooms i:j
+        "room:0,0" |> Presence.list |> Map.keys |> Server.Characters.positions
+        # IO.puts "Sent world update to room 0,0: #{inspect Presence.list("room:0,0")}"
     end
 
     def valid_input(input) do

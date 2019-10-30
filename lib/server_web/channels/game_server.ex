@@ -14,8 +14,8 @@ defmodule ServerWeb.GameServerChannel do
 
   @spec handle_info(:after_join, Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
-    {:ok, _} = Presence.track(socket, socket.assigns.user_id, %{
-      character_id: socket.assigns.character_id
+    {:ok, _} = Presence.track(socket, socket.assigns.character_id, %{
+      user_id: socket.assigns.user_id
     })
     IO.puts "Presence: #{inspect Presence.list("room:" <> socket.assigns.room)}"
     {:noreply, socket}

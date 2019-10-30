@@ -13,4 +13,8 @@ defmodule Server.Characters do
         |> Repo.update_all(set: [x: x], set: [y: y], set: [z: z])
     end
 
+    def get(ids) do
+        from(c in Character, where: c.id in ^ids) |> Repo.all
+    end
+
 end
