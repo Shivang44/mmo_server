@@ -42,7 +42,7 @@ defmodule Server.TickExecuter do
 
     def send_world_state() do
         # For now we will only send updates to room 0:0. Eventually this will be loop over all rooms i:j
-        "room:0,0" |> Presence.list |> Map.keys |> Server.Characters.positions
+        # "room:0,0" |> Presence.list |> Map.keys |> Server.Characters.positions
         # IO.puts "Sent world update to room 0,0: #{inspect Presence.list("room:0,0")}"
     end
 
