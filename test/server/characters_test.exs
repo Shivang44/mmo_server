@@ -12,7 +12,7 @@ defmodule Server.CharactersTest do
     }
   
     setup do
-      Ecto.Adapters.SQL.Sandbox.allow(Server.Repo, self(), Accounts)
+      Ecto.Adapters.SQL.Sandbox.allow(Server.Repo, self(), Characters)
       :ok
     end
   

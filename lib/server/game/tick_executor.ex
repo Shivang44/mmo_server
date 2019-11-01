@@ -42,11 +42,9 @@ defmodule Server.TickExecuter do
 
     def send_world_state() do
         # For now we will only send updates to room 0:0. Eventually this will be loop over all rooms i:j
-        # "room:0,0" |> Presence.list |> Map.keys |> Server.Characters.positions
-        # IO.puts "Sent world update to room 0,0: #{inspect Presence.list("room:0,0")}"
-    end
-
-    def valid_input(input) do
-        true
+        characters = "room:0,0" |> Presence.list |> Map.keys |> Server.Characters.get
+        # characters_response = characters |> Enum.map(fn character -> %{character_id: character.id, x: character.x, y: character.y, z: character.z} end)
+        # ServerWeb.Endpoint.broadcast("room:0,0", "room_update:0,0", %{characters: characters_response})
+        # IO.puts "Sent world update to room 0,0: #{inspect Presence.list("room:0,0")} #{inspect characters_response}"
     end
 end

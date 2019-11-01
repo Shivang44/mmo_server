@@ -12,7 +12,6 @@ defmodule ServerWeb.GameServerChannel do
     {:error, %{reason: "unauthorized"}}
   end
 
-  @spec handle_info(:after_join, Phoenix.Socket.t()) :: {:noreply, Phoenix.Socket.t()}
   def handle_info(:after_join, socket) do
     {:ok, _} = Presence.track(socket, socket.assigns.character_id, %{
       user_id: socket.assigns.user_id
